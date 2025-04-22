@@ -89,7 +89,7 @@ def create_ssm_dict_for_resfile(ref_pose, chain_id):
 
 def create_resfile(blueprint_pose, seqpos, repacking_radius, resfile_dir):
     """
-
+    Creates a single resfile.
     :param blueprint_pose: The pose to use as a reference. All the distances for repacking will be
     based on this pose.
     :param seqpos: Sequence position to build the .resfile around. If there is no
@@ -197,7 +197,7 @@ def create_resfile(blueprint_pose, seqpos, repacking_radius, resfile_dir):
 
 def generate_resfiles(blueprint_pose, mutation_dictionary, repack_radius, resfile_dir):
     """
-    Apply create_resfile() to every seqpos
+    Applies create_resfile() to every seqpos
     :param mutation_dictionary: output of create_ssm_mutations_for_resfile
     :return: None
     """
