@@ -14,12 +14,18 @@ init()
 """
 Grid-search of MDR-FEP data.
 
-For optimizing over ALL proteins, use the following directory setup:
+To carry this out, you'll need the .npz files for both the monomer and dimer of EACH minibinder to be in a directory named:
 
     [(softrep or hardrep)]__[(min or nomin)]__[(5 or 15)]   
 
-Where each directory has the .npz files for both the monomer and dimer of EACH minibinder. 
-    
+The code will search through a directory of that name and will combine the data for all of those .npz files.
+For example, if you wanted to do a grid search of Beta values for runs where you scored with the softrep score function, without gradient-based sidechain minimization, and repacked
+within 5 Å, it would be 'softrep__nomin__5'. 
+
+The minibinders in question were designed by:
+Cao, L., Coventry, B., Goreshnik, I. et al. Design of protein-binding proteins from the target structure alone. Nature 605, 551–560 (2022). https://doi.org/10.1038/s41586-022-04654-9
+
+The experimental data we used to measure accuracy and correlation also came from this paper.
 """
 
 # This dictionary is mostly for cosmetics, it's referenced for the titles of the graphs since the design names are super long
@@ -36,11 +42,12 @@ protein_list = list(protein_dict.keys())
 
 def parse_exp_data(affinity_estimate, protein, protein_dimer_pdb, protein_seq):
     """
-    Function to process the experimental data from Cao et al. (2022), https://doi.org/10.1038/s41586-022-04654-9.
-    :param affinity_estimate: ssm_correlation_for_plotting.sc output file from supp data.
-    :param validation: validation_score.sc output file from supp data.
+    Function to process the experimental data from:
+    Cao, L., Coventry, B., Goreshnik, I. et al. Design of protein-binding proteins from the target structure alone. Nature 605, 551–560 (2022). https://doi.org/10.1038/s41586-022-04654-9
+
+    :param affinity_estimate: ssm_correlation_for_plotting.sc
     :param protein: The string of the design name.
-    :param protein_dimer_pdb: .pdb of the protein as it appears in supp data.
+    :param protein_dimer_pdb: Protein Data Bank file (.pdb) of the protein
     :param protein_seq: .seq file of the protein sequence in FASTA format.
     :return Dataframe of parsed experimental data.
     """
@@ -48,10 +55,10 @@ def parse_exp_data(affinity_estimate, protein, protein_dimer_pdb, protein_seq):
     # read experimental data files
     ssm_correlation_for_plotting = pd.read_csv(affinity_estimate, sep=r'\s+')
 
-    # create an experimental dataframe
-    exp_df = ssm_correlation_for_plotting[ssm_correlation_for_plotting['ssm_parent'] == protein].copy()
+    # create an experimental dataframe for your protein of interest only
+    protein_df = ssm_correlation_for_plotting[ssm_correlation_for_plotting['ssm_parent'] == protein].copy()
 
-    # create and store a sequence dictionary
+    # create and fill a sequence dictionary
     seq_dict = {}
 
     with open(protein_seq, 'r') as f:
@@ -61,33 +68,34 @@ def parse_exp_data(affinity_estimate, protein, protein_dimer_pdb, protein_seq):
 
             seq_dict[protein] = line
 
-    # add a column for parent_letter
+    # add a column for parent_letter (since we don't mutate to the WT amino acid)
     parent_letters = []
 
     sequence = seq_dict.get(protein)
-    for _, row in exp_df.iterrows():
+    for _, row in protein_df.iterrows():
 
         wt_aa = sequence[row['ssm_seqpos'] - 1]
 
         parent_letters.append(wt_aa)
 
-    exp_df.loc[:, 'parent_letter'] = parent_letters
+    # add the WT amino acid at that sequence position to the dataframe
+    protein_df.loc[:, 'parent_letter'] = parent_letters
 
     # filter the dataframe based on the sequence dictionary
     # (remove wild-type residues from mutation dataset)
     filtered_rows = []
 
-    for _, row in exp_df.iterrows():
+    for _, row in protein_df.iterrows():
 
         wt_aa = sequence[row['ssm_seqpos'] - 1]
         if row['ssm_letter'] != wt_aa:
             filtered_rows.append(row)
 
     # create new dataframe
-    exp_data = pd.DataFrame(filtered_rows)
-    exp_data = exp_data.reset_index(drop=True)
+    experimental_data = pd.DataFrame(filtered_rows)
+    experimental_data = experimental_data.reset_index(drop=True)
 
-    # add an 'is_loop' column for later fitting
+    # add an 'is_loop' Boolean column for later fitting
     pose = pose_from_file(protein_dimer_pdb)
 
     print(f'Pose object created from {protein}:', flush=True)
@@ -98,37 +106,36 @@ def parse_exp_data(affinity_estimate, protein, protein_dimer_pdb, protein_seq):
 
     is_loops = []
 
-    for _, row in exp_data.iterrows():
+    for _, row in experimental_data.iterrows():
         secstruct = dssp[row['ssm_seqpos']]
         is_loop = (secstruct == 'L')
         is_loops.append(is_loop)
 
-    exp_data.loc[:, 'is_loop'] = is_loops
+    experimental_data.loc[:, 'is_loop'] = is_loops
 
     # Motif1400... has slightly different experimental data (no mutations to C)
     if protein != 'Motif1400_ems_3hM_482_0001_7396_0001':
-        for seqpos, seqpos_group in exp_data.groupby('ssm_seqpos'):
+        for seqpos, seqpos_group in experimental_data.groupby('ssm_seqpos'):
             assert len(seqpos_group) == 19, 'There are more than the allowed amino acid mutations in one or more seqpos groups'
 
-    # remove unnecessary columns
-    # actually don't do this, need to compare to their rosetta data
-    # exp_data.drop(columns=['delta_rosetta_lb', 'delta_rosetta_ub'], inplace=True)
-
     print(f'Structure of experimental data for {protein}:', flush=True)
-    print(exp_data.shape, flush=True)
+    print(experimental_data.shape, flush=True)
 
-    return exp_data
+    return experimental_data
 
 
 def zwanzig(beta, array):
     """
     Applies FEP using the Zwanzig equation over an array for a single mutation.
     :param beta: (pseudo) inverse temperature factor
-    :param array: ∆Energy values from Roseta.
+    :param array: ∆Energy values from Roseta (∆E_mut - ∆E_wt)
     :return: ∆G (REU) point average from array.
     """
+
+    # ensure that it is in fact an array
     arr = np.array(array, dtype='float64')
 
+    # Zwanzig equation
     delta_g = (-1 / beta) * np.log(np.mean(np.exp(-beta * arr)))
 
     return delta_g
@@ -136,7 +143,7 @@ def zwanzig(beta, array):
 
 def parse_rosetta_data(dimer_npz, monomer_npz, protein):
     """
-    Process data from MDR-FEP .npz files.
+    Process data from MDR-FEP .npz files. The mdr.py script outputs its results in the form of .npz files.
     :param dimer_npz: .npz file from running MDR on the dimer form.
     :param monomer_npz: .npz file from running MDR on the monomer.
     :param protein: SSM parent string
@@ -181,37 +188,38 @@ def parse_rosetta_data(dimer_npz, monomer_npz, protein):
 
 def combine_dfs(rosetta_df, experimental_df):
     """
-    Function to merge the predicted and experimental data.
+    Function to merge the predicted and experimental dataframes.
     :param rosetta_df: parse_rosetta_data() output
     :param experimental_df: parse_exp_data() output
     :return: A (filtered) dataframe containing all the predicted and experimental data.
     """
 
-    all_df = rosetta_df.merge(experimental_df, 'left', ['ssm_seqpos', 'ssm_letter', 'ssm_parent'])
+    combined_df = rosetta_df.merge(experimental_df, 'left', ['ssm_seqpos', 'ssm_letter', 'ssm_parent'])
 
-    # had the issue where this column wasn't being processed as a boolean!!!!
-    all_df['is_loop'] = all_df['is_loop'].astype(bool)
-    all_df['low_conf'] = all_df['low_conf'].astype(bool)
-    all_df['avid_doesnt_agree'] = all_df['avid_doesnt_agree'].astype(bool)
+    # I had a weird issue where columns weren't being processed as a boolean, so explicitly set it here
+    combined_df['is_loop'] = combined_df['is_loop'].astype(bool)
+    combined_df['low_conf'] = combined_df['low_conf'].astype(bool)
+    combined_df['avid_doesnt_agree'] = combined_df['avid_doesnt_agree'].astype(bool)
 
-    return all_df
+    return combined_df
 
 
-def produce_delta_g(filt_df, beta):
+def produce_delta_g(combined_df, beta):
     """
     Takes in the output of combine_dfs() and applies the Zwanzig equation over the monomer and dimer ∆E (Rosetta) values.
-    :param filt_df: Output of combine_dfs()
+    :param combined_df: Output of combine_dfs()
     :param beta: (pseudo) inverse temperature factor
     :return: Dataframe containing FEP output.
     """
 
-    dimer_arrays = [np.array(filt_df['dimer_de'].iloc[i]) for i in range(0, len(filt_df))]
-    monomer_arrays = [np.array(filt_df['monomer_de'].iloc[i]) for i in range(0, len(filt_df))]
-
+    # iterate through the dimer_de and monomer_de vectors
+    dimer_arrays = [np.array(combined_df['dimer_de'].iloc[i]) for i in range(0, len(combined_df))]
+    monomer_arrays = [np.array(combined_df['monomer_de'].iloc[i]) for i in range(0, len(combined_df))]
     dimer_dgs = [zwanzig(beta, array) for array in dimer_arrays]
     monomer_dgs = [zwanzig(beta, array) for array in monomer_arrays]
 
-    dg_df = filt_df.copy()
+    # create a dataframe storing ∆G values
+    dg_df = combined_df.copy()
 
     dg_df.loc[:, 'dimer_dg'] = dimer_dgs
     dg_df.loc[:, 'monomer_dg'] = monomer_dgs
@@ -223,7 +231,11 @@ def produce_delta_g(filt_df, beta):
 
 def dg_fold_to_p_fold(dg_fold):
     """
-    Robbed straight from the supplementary data of Cao et al. (2022)
+    Using a sigmoid to fit a probability of folding (P(Monomer fold)) based on an estimated ∆G of folding.
+    Based on:
+    Cao, L., Coventry, B., Goreshnik, I. et al. Design of protein-binding proteins from the target structure alone. Nature 605, 551–560 (2022). https://doi.org/10.1038/s41586-022-04654-9
+
+
     :param dg_fold: The (estimated) free energy of folding for the WT monomer.
     :return sigmoid(dg_fold) --> probability of folding.
     """
@@ -234,7 +246,9 @@ def dg_fold_to_p_fold(dg_fold):
 
 def p_fold_effect(p_ref, p_new, fit_point=0.125):
     """
-    Robbed straight from the supplementary data of Cao et al. (2022)
+    Based on:
+    Cao, L., Coventry, B., Goreshnik, I. et al. Design of protein-binding proteins from the target structure alone. Nature 605, 551–560 (2022). https://doi.org/10.1038/s41586-022-04654-9
+
     :param p_ref: The WT probability of folding
     :param p_new: The probability of folding after mutating to X.
     :param fit_point: Derived value for the fraction of miniprotein bound in solution.
@@ -247,7 +261,9 @@ def p_fold_effect(p_ref, p_new, fit_point=0.125):
 
 def ddg_monomer_from_dg_fold_and_delta_e(dg_fold, delta_g_monomer):
     """
-    Robbed straight from the supplementary data of Cao et al. (2022)
+    Based on:
+    Cao, L., Coventry, B., Goreshnik, I. et al. Design of protein-binding proteins from the target structure alone. Nature 605, 551–560 (2022). https://doi.org/10.1038/s41586-022-04654-9
+
     :param dg_fold: Estimated free energy of WT folding.
     :param delta_g_monomer: Zwanzig(∆E_monomer) output
     :return P(fold)_effect when you perturb the monomer with X mutation.
@@ -264,7 +280,10 @@ def ddg_monomer_from_dg_fold_and_delta_e(dg_fold, delta_g_monomer):
 
 def filter_for_dg_fold_fitting(df):
     """
-    Filter the dataframe before fitting with dg_fold.
+    Filter the combined dataframe for positions that are away from the binding interface, mutations involving C, P, and G, occur on a loop, or whose experimental data is low-quality.
+    Based on:
+    Cao, L., Coventry, B., Goreshnik, I. et al. Design of protein-binding proteins from the target structure alone. Nature 605, 551–560 (2022). https://doi.org/10.1038/s41586-022-04654-9
+
     :param df: Output of combine_dfs()
     :return: Filtered dataframe.
     """
@@ -293,6 +312,9 @@ def fit_dg_fold(mdrfep_dg_monomer_values, y_lb, y_ub, dg_fold_ci_width_avg_dev=0
                 dg_fold_upper_clip=10):
     """
     Use least-squares regression and a grid search to estimate the free energy of folding.
+    Based on:
+    Cao, L., Coventry, B., Goreshnik, I. et al. Design of protein-binding proteins from the target structure alone. Nature 605, 551–560 (2022). https://doi.org/10.1038/s41586-022-04654-9
+
     :param mdrfep_dg_monomer_values: Array of Zwanzig(∆E array) output
     :param y_lb: Experimental lower bound for binding affinity change.
     :param y_ub: Experimental upper bound for binding affinity change.
@@ -448,7 +470,7 @@ def grid_search(all_protein_df, conditions_name, beta_lb=0, beta_ub=0.1, beta_st
     :param beta_lb: Lower bound of the Beta parameter
     :param beta_ub: Upper bound of the Beta parameter
     :param beta_step: dBeta over the course of the grid search
-    :param metric_of_interest: This will search through the complete results of the grid search and find the Beta value that produced the best value of this
+    :param metric_of_interest: This will search through the complete results of the grid search and find the Beta value that produced the best value of this. This only changes which values are returned in the output file, NOT how the grid search is actually carried out.
     :return: A dataframe containing (mostly) complete results. I say mostly only because this outputs so many files as is, so usually I don't do anything with this dataframe
     """
     # save all_protein_df for later plotting
@@ -457,8 +479,6 @@ def grid_search(all_protein_df, conditions_name, beta_lb=0, beta_ub=0.1, beta_st
     # big, big dictionary
     correlations = {
         'beta': [],
-
-        # overall correlation
         'correlation': [],
         'correlation_intcore': [],
         'correlation_intbound': [],
@@ -521,7 +541,7 @@ def grid_search(all_protein_df, conditions_name, beta_lb=0, beta_ub=0.1, beta_st
         # now calculate rosetta's ability to predict mutations
         to_assess = df.copy()
 
-        # work around the bug
+        # work around the bug with Boolean vectors (mentioned previously)
         to_assess['low_conf'] = to_assess['low_conf'].astype(bool)
         to_assess['avid_doesnt_agree'] = to_assess['avid_doesnt_agree'].astype(bool)
         to_assess['is_loop'] = to_assess['is_loop'].astype(bool)
@@ -664,9 +684,9 @@ def grid_search(all_protein_df, conditions_name, beta_lb=0, beta_ub=0.1, beta_st
     corr_df = pd.DataFrame(correlations)
     corr_df.to_csv(f'correlations_{conditions_name}.sc', index=False)
 
-    # go through the rest and save that plot
     ''' Go through one 'unit' of the above grid search with the ideal beta value '''
 
+    # the ideal beta value will depend on the metric of interest
     max_corr_idx = np.argmax(corr_df[metric_of_interest])
     max_corr = corr_df.iloc[max_corr_idx][metric_of_interest]
     ideal_beta = corr_df.iloc[max_corr_idx]['beta']
