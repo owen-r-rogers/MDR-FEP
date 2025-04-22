@@ -1,0 +1,14 @@
+Bio==1.7.1
+jax==0.6.0
+matplotlib==3.10.1
+mock==5.2.0
+natsort==7.1.1
+numpy==2.2.5
+pandas==2.2.3
+#pyrosetta==2024.39+release.59628fbc5b    # this will need to be installed via a different method
+python_dateutil==2.9.0.post0
+scipy==1.15.2
+seaborn==0.13.2
+silent_tools==1.0.0
+torch==2.5.1
+xarray==2024.9.0
