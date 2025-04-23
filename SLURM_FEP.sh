@@ -1,7 +1,7 @@
 #!/bin/bash
-#SBATCH --job-name=ALL-GRID-SEARCH
-#SBATCH --output=AGS_%a.log
-#SBATCH --error=AGS_%a.err
+#SBATCH --job-name=GRID-SEARCH
+#SBATCH --output=GS_%a.log
+#SBATCH --error=GS_%a.err
 #SBATCH --array=0-3
 #SBATCH --cpus-per-task=1
 #SBATCH --tasks-per-node=1
@@ -16,5 +16,7 @@ conda activate pyrosetta2024.39_py3.12
 export ROSETTA3_DB=/smithlab/opt/anaconda/envs/pyrosetta2024.39_py3.12/lib/python3.12/site-packages/pyrosetta/database
 
 
-python grid_search_all_proteins.py --experimental-data ssm_correlation_for_plotting.sc --beta-ub 0.15 --beta-step 0.0001
-
+python grid_search_all_proteins.py --experimental-data ssm_correlation_for_plotting.sc \
+--beta-ub 0.15 \
+--beta-step 0.0001 \
+--metric correlation

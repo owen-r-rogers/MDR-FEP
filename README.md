@@ -87,6 +87,7 @@ python mdr.py --minimize                            # performs gradient-based si
 --num-files $(ls ${PDB_DIR}/frame*.pdb | wc -l)     # will merge the results from the files only when this number of files is present\
 --n mdrfep_run                                      # name of the output file\
 ```
+Submitting the mdr.py script to a SLURM array task can be accomplished with SLRUM_MDR.sh
 
 The number of SLURM arrays processing .pdb files in parallel based on the block-size is:
 
@@ -97,5 +98,19 @@ The number of SLURM arrays processing .pdb files in parallel based on the block-
 ```angular2html
 python grid_search.py --experimental-data ssm_correlation_for_plotting.sc \
 --beta-ub 0.15 \
---beta-step 0.0001
+--beta-step 0.0001 \
+--metric correlation
 ```
+Submitting the grid_search.py script to a SLURM array task can be accomplished with SLURM_FEP.sh, or it can be done using the grid_search.ipynb Jupyter notebook
+
+## Further analysis
+For each MDR-FEP condition (combination of score function, repacking radius, and minimization) you will be the following files:
+```angular2html
+all_data_$CONDITION.csv         # contains all of the raw data before any processing
+correlations_$CONDITION.sc      # contains correlation and accuracy values for all values of Beta tested
+$CONDITION_mdrfep_output.sc     # contains ∆∆G_mdrfep upper and lower bound values for the optimal value of beta (based on the metric argument passed to grid_search.py
+for_plotting_$CONDITION.sc      # contains ∆∆G_mdrfep point values for the optimal value of beta
+```
+
+Along with some .png files visualizing your results.
+
