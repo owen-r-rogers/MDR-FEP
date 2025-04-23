@@ -10,9 +10,10 @@ This is the repository accompanying my Master of Arts thesis in Chemistry. The f
   II. Equilibration  
   III. Production MD  
   IV. PBC correction  
-  V. Extracting frames  
-  For BOTH the binder and the binder-target structures independently.
+  V. Extracting frames
 ```
+  For BOTH the binder and the binder-target structures independently.
+
 
 With this completed you have an ensemble of WT structures that you can feed to Rosetta for fixed-backbone sidechain repacking and scoring.
 
