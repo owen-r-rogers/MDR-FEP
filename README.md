@@ -55,10 +55,10 @@ mkdir mdrun
 cd mdrun
 mkdir 01 02 03
 for n in 01 02 03; do cd $n; gmx grompp -f /path/to/mdp/production_1000ns.mdp \
--c /path/to/equil/npt4.pdb \
--r /path/to/prep/ions.pdb \
--p /path/to/prep/topol.top \
--t /path/to/equil/npt4.cpt \
+-c ../../equil/npt4.pdb \
+-r ../../prep/ions.pdb \
+-p ../../prep/topol.top \
+-t ../../equil/npt4.cpt \
 -o topol.tpr \
 -po mdout.mdp \
 -quiet; cd ..; done
