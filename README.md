@@ -26,6 +26,7 @@ This is the repository accompanying my Master of arts chemistry thesis. The focu
 mkdir prep
 sbatch energy_minimization.sh </pre>
 
+The directory should now resemble this:
 <pre>
 protein_of_interest/
 ├── some.pdb                    # .pdb file of either the monomer or dimer
@@ -37,6 +38,7 @@ protein_of_interest/
 ├── extract_frames.sh           # extracts a frame at each ns interval
 </pre>
 
+The scripts don't have to be in that directory necessarily
 <pre>
 # equilibrate
 sbatch equilibration.sh
