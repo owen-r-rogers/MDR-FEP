@@ -87,7 +87,7 @@ python mdr.py --minimize                            # performs gradient-based si
 --num-files $(ls ${PDB_DIR}/frame*.pdb | wc -l)     # will merge the results from the files only when this number of files is present\
 --n mdrfep_run                                      # name of the output file\
 ```
-Submitting the mdr.py script to a SLURM array task can be accomplished with SLRUM_MDR.sh
+Submitting the mdr.py script to a SLURM array task can be accomplished with SLURM_MDR.sh
 
 The number of SLURM arrays processing .pdb files in parallel based on the block-size is:
 
