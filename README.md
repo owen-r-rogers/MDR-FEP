@@ -5,16 +5,19 @@ This is the repository accompanying my Master of Arts thesis in Chemistry. The f
 
 ## The standard pipeline for MDR-FEP is to first carry out equilibrium MD of the WT sequence.
 ### This involves:
+```
   I. Energy minimization  
   II. Equilibration  
   III. Production MD  
   IV. PBC correction  
-  V. Extracting frames  
+  V. Extracting frames
+```
   For BOTH the binder and the binder-target structures independently.
+
 
 With this completed you have an ensemble of WT structures that you can feed to Rosetta for fixed-backbone sidechain repacking and scoring.
 
-## Before carrying out the Rosetta repacking and scoring you need an idea of what mutations you need an idea of what mutations you want to carry out, and what distance you want to repack each residue within. 
+## Before carrying out the Rosetta repacking and scoring you need an idea of what mutations you want to carry out, and what distance you want to repack each residue within. 
 5 Å is a conservative selection, as it repacks a little bit of the structure while being carried out quickly.
 
 You need the following directory setup:
