@@ -61,7 +61,7 @@ for n in 01 02 03; do cd $n; gmx grompp -f /path/to/mdp/production_1000ns.mdp \
 -t /path/to/equil/npt4.cpt \
 -o topol.tpr \
 -po mdout.mdp \
--queit; cd ..; done
+-quiet; cd ..; done
 
 # carry out MD run
 for n in 01 02 03; do cd $n; sbatch /path/to/production.sh; cd ..; done
