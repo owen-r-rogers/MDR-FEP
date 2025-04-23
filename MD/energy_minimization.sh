@@ -1,9 +1,7 @@
 #!/bin/bash
-# Set to 1-20 for 006-079
-##SBATCH --array=1-20
 #SBATCH --output=out_prep.log
 ##SBATCH --mail-type=END
-##SBATCH --mail-user=orogers@wesleyan.edu
+##SBATCH --mail-user=your@email.com
 #SBATCH --job-name=mp_em
 #SBATCH --ntasks=1
 #SBATCH --mem-per-gpu=7168
@@ -30,21 +28,16 @@ export MDRUN=$(func.get_mdrun)
 #module load hwloc
 
 # GMXLIB selection
-export GMXLIB=~/3_GMXLIB/CAO/amber99sb-ildn.ff
+export GMXLIB=/path/to/amber99sb-ildn.ff
 
-#FORCE_FIELD=amber99sb-star-ildn-mut
 FORCE_FIELD=amber99sb-ildn
 INPUT_PDB=$( ls -tr *.pdb | head )
-#INPUT_TOPOL=*.top
 BASE_NAME=`basename $INPUT_PDB .pdb`
-MDP_DIR=~/3_GMXLIB/CAO/mdp
+MDP_DIR=/path/to/mdp
 
 mkdir prep
 cp $INPUT_PDB prep
 cd prep
-
-# Turn water model .gro file into a .pdb file **ONLY for a99Sbdisp
-#gmx editconf -f $GMXLIB/a99SBdisp.ff/a99SBdisp_water.gro -o a99SBdisp_water.pdb
 
 # Convert from PDB
 echo "#### Converting from PDB ####"
@@ -56,7 +49,6 @@ gmx editconf -f conf.pdb -o box.pdb -d 1.5 -c -bt dodecahedron
 
 # Add water
 echo "#### Adding water ####"
-#gmx solvate -cp box.pdb -cs $GMXLIB/a99SBdisp.ff/a99SBdisp_water.gro -o water.pdb -p topol.top #for a99SBdisp
 gmx solvate -cp box.pdb -cs spc216.gro -o water.pdb -p topol.top
 
 # Add ions
@@ -74,4 +66,3 @@ gmx grompp -f $MDP_DIR/em.mdp -c ions.pdb -o em.tpr -maxwarn 3
 
 # run em
 $MDRUN -v -deffnm em -c em.pdb
-

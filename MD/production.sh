@@ -1,14 +1,12 @@
 #!/bin/bash
 
-# Set to 1-20 for 006-079
-##SBATCH --array=1-20
 #SBATCH --output=production.log
 #SBATCH --ntasks=1
 #SBATCH --mem-per-gpu=7168
 #SBATCH --gres=gpu:1
 #SBATCH --job-name=production_250ns
 #SBATCH --mail-type=END
-#SBATCH --mail-user=orogers@wesleyan.edu
+#SBATCH --mail-user=your@email.com
 
 # exx96 (11 nodes: GeForce RTX 2080 Super)
 ##SBATCH --partition=exx96
@@ -42,7 +40,7 @@ export MDRUN=$(func.get_mdrun)
 export MDRUN_FLAGS="-nt $SLURM_CPUS_PER_GPU -pin on -pinoffset $(($CUDA_VISIBLE_DEVICES*$SLURM_CPUS_PER_GPU)) -pinstride 1"
 
 # GMXLIB selection
-export GMXLIB=~/3_GMXLIB/CAO/amber99sb-ildn.ff
+export GMXLIB=/path/to/amber99sb-ildn.ff
 
 # checkpoint interval (minutes)
 MULTI=no

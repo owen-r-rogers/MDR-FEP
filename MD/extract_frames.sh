@@ -4,15 +4,18 @@
 #SBATCH --mem=1G
 #SBATCH --partition=exx96,test
 
+# This script is for extracting a .pdb at each frame of the PBC-corrected production simulation.
+
 echo $1
 
+# Pass "2021" if you want GROMACS 2021, otherwise it will default to 2024
 if [ "$1" = "2021" ]; then
         source /smithlab/opt/gromacs/GMXRC2021
 else
         source /smithlab/opt/gromacs/GMXRC2024
 fi
 
-# define things
+# Time of the MD run
 TIME=1000
 
 # extract frames and put into new directory
@@ -25,6 +28,3 @@ for i in $(seq 0 $TIME); do
 	mv ../frame$i.pdb .
 	cd ..
 done
-
-
-

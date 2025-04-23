@@ -1,0 +1,29 @@
+
+; VARIOUS PREPROCESSING OPTIONS = 
+title                    = 
+cpp                      = /lib/cpp
+include                  = 
+define                   = -DFLEXIBLE
+;warnings                 = 10
+
+; RUN CONTROL PARAMETERS = 
+integrator               = steep
+
+; ENERGY MINIMIZATION OPTIONS = 
+emtol                    = 100
+emstep                   = 0.001
+nsteps                   = 10000
+
+; NEIGHBORSEARCHING PARAMETERS
+; cut-off scheme (Verlet: particle based cut-offs, group: using charge groups)
+cutoff-scheme            = Verlet
+
+; OPTIONS FOR ELECTROSTATICS AND VDW
+; Method for doing electrostatics
+coulombtype              = PME
+rcoulomb                 = 1.0
+rvdw                     = 1.0
+pbc                      = xyz
+
+; some stuff
+;continuation             = yes

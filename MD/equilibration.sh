@@ -23,7 +23,7 @@
 #SBATCH --partition=test,exx96
 #SBATCH --cpus-per-gpu=12
 
-echo "This script is for equilibration where every chain present (or ones you choose) are restrained, whereas equil_complex only restrains the target."
+# This script is for carrying out equilibration runs after energy minimization
 
 echo $1
 
@@ -37,9 +37,8 @@ export MDRUN=$(func.get_mdrun)
 export MDRUN_FLAGS="-nt $SLURM_CPUS_PER_GPU -pin on -pinoffset $(($CUDA_VISIBLE_DEVICES*$SLURM_CPUS_PER_GPU)) -pinstride 1"
 
 # GMXLIB selection
-#export GMXLIB=~/research/2024Spring/GMXLIB/ROCKLIN/amber99sb-star-ildn-mut.ff/
-export GMXLIB=~/3_GMXLIB/CAO/amber99sb-ildn.ff
-MDP_DIR=~/3_GMXLIB/CAO/mdp
+export GMXLIB=/path/to/amber99sb-ildn.ff
+MDP_DIR=/path/to/mdp
 DIR=${1:-equil}
 
 mkdir equil

@@ -8,9 +8,9 @@
 #SBATCH --mail-type=begin
 #SBATCH --mail-type=end
 #SBATCH --mail-type=fail
-#SBATCH --mail-user=orogers@wesleyan.edu
+#SBATCH --mail-user=your@email.com
 
-echo "This script will fix PBC for the minibinder and the target protein, will remove waters. If you are using this script for analysis with one of the jupyter notebooks, should change the time step so that 25000 frames get output instead of 250."
+# This script is for running periodic boundary conditions (PBC) treatment on the completed production simulation.
 
 echo $1
 
@@ -20,18 +20,17 @@ else
 	source /smithlab/opt/gromacs/GMXRC2024
 fi
 
-# fix no jump
+# fix atoms that jump across the box
 (echo 1 ; echo 1) | gmx trjconv -s topol.tpr -f traj_comp.xtc -o nojump.pdb -pbc nojump -center -tu ps
 
-# center
+# center the molecule
 (echo 1 ; echo 1) | gmx trjconv -s topol.tpr -f nojump.pdb -pbc mol -center -o bind.xtc
 
-# smooth
+# smooth the trajectory
 (echo 4 ; echo 1) | gmx trjconv -s topol.tpr -f bind.xtc -o smooth.xtc -fit rot+trans
 
-# starting structure
+# dump the starting structure
 (echo 1) | gmx trjconv -s topol.tpr -f smooth.xtc -o start.pdb -dump 0
 
-# average structure
+# dump the average structure
 (echo 1) | gmx rmsf -s topol.tpr -f smooth.xtc -ox xaver.pdb 
-
