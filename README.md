@@ -32,12 +32,11 @@ Directories listed here:
 # The .mdp files and the force field files should be stored elsewhere
 
 # energy minimize
-mkdir prep
 sbatch energy_minimization.sh </pre>
 
 The directory should now resemble this:
 <pre>
-protein_of_interest/
+base_dir/
 ├── some.pdb                    # .pdb file of either the monomer or dimer
 ├── energy_minimization.sh      # performs energy minimization
 ├── equilibration.sh            # performs equilibration
