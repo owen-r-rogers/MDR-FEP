@@ -102,7 +102,7 @@ This script will create a Rosetta resfile for each sequence position, listing al
 ## Perform Rosetta fixed-backbone sequence design
 From the dimer/monomer directory containing the input and resfiles directories, execute the mdr.py script.
 
-There are some different inputs, but a typical execution resembles the following:
+There are some different inputs, but a typical execution without using SLURM resembles the following:
 ```
 # export environmental variables pointing the script towards .pdb and .resfile files
 export PDB_DIR="$(pwd)/input"
@@ -115,7 +115,7 @@ python mdr.py --minimize                            # performs gradient-based si
 --num-files $(ls ${PDB_DIR}/frame*.pdb | wc -l)     # will merge the results from the files only when this number of files is present\
 --n mdrfep_run                                      # name of the output file\
 ```
-Submitting the mdr.py script to a SLURM array task can be accomplished with SLURM_MDR.sh
+Submitting the mdr.py script to a SLURM array task can be accomplished with SLURM_MDR.sh, which executes the code above but processes the .pdb files in batches.
 
 The number of SLURM arrays processing .pdb files in parallel based on the block-size is:
 
@@ -148,10 +148,6 @@ base_directory/
 │   │   └── hardrep__nomin__5/
 
 ```
-
-
-
-
 
 ## Perform FEP using the Zwanzig equation
 
