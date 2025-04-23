@@ -1,9 +1,10 @@
-# MDR-FEP
+MDR-FEP
 ----
 
-This is the repository accompanying my Master of Arts thesis in Chemistry. The focus of my thesis was using molecular dynamics (MD) and the Rosetta software to predict the effects of mutations to computationally designed protein binders (Cao et al. March, 2022. https://doi.org/10.1038/s41586-022-04654-9). We used a combination of MD, Rosetta, and free energy perturbation to quantify the binding effects of each mutation. This method, called MDR-FEP (Molecular Dynamics Rosetta Free Energy Perturbation) is first described by Wells. et al (February, 2023. https://doi.org/10.1002/prot.26477).
+This is the repository accompanying my Master of Arts thesis in Chemistry. The focus of my thesis was using molecular dynamics (MD) and the Rosetta software to predict the effects of mutations to computationally designed protein binders (Cao, L., Coventry, B., Goreshnik, I. et al. Design of protein-binding proteins from the target structure alone. Nature 605, 551–560 (2022). https://doi.org/10.1038/s41586-022-04654-9). We used a combination of MD, Rosetta, and free energy perturbation to quantify the binding effects of each mutation. This method, called MDR-FEP (Molecular Dynamics Rosetta Free Energy Perturbation) is first described by Wells et al. (Wells NGM, Smith CA. Predicting binding affinity changes from long-distance mutations using molecular dynamics simulations and Rosetta. Proteins. 2023; 91(7): 920-932. doi:10.1002/prot.26477).
 
-## The standard pipeline for MDR-FEP is to first carry out equilibrium MD of the WT sequence.
+## The pipeline for MDR-FEP follows the acronym.
+### Step I. Molecular dynamics (MD)
 ### This involves:
 ```
   I. Energy minimization  
@@ -12,8 +13,38 @@ This is the repository accompanying my Master of Arts thesis in Chemistry. The f
   IV. PBC correction  
   V. Extracting frames
 ```
-  For BOTH the binder and the binder-target structures independently.
+  This is carried out for BOTH the binder and the binder-target structures independently.
 
+<pre># The only file in your directory should be the .pdb file (of either the monomer or the dimer)
+
+# energy minimize
+mkdir prep
+sbatch energy_minimization.sh
+
+# equilibrate
+sbatch equilibration.sh
+
+# setup directories for MD
+mkdir mdrun
+cd mdrun
+mkdir 01 02 03
+for n in 01 02 03; do cd $n; gmx grompp -f /path/to/mdp/production_1000ns.mdp \
+-c /path/to/equil/npt4.pdb \
+-r /path/to/prep/ions.pdb \
+-p /path/to/prep/topol.top \
+-t /path/to/equil/npt4.cpt \
+-o topol.tpr \
+-po mdout.mdp \
+-queit; cd ..; done
+
+# carry out MD run
+for n in 01 02 03; do cd $n; sbatch /path/to/production.sh; cd ..; done
+
+# after production MD is finished carry out PBC corrections
+for n in 01 02 03; do cd $n; sbatch /path/to/pbc_correction.sh; cd ..; done
+
+# extract frames from the PBC-corrected trajectory
+for n in 01 02 03; do cd $n; sbatch /path/to/extract_frames.sh; cd ..; done</pre>
 
 With this completed you have an ensemble of WT structures that you can feed to Rosetta for fixed-backbone sidechain repacking and scoring.
 
@@ -21,15 +52,16 @@ With this completed you have an ensemble of WT structures that you can feed to R
 5 Å is a conservative selection, as it repacks a little bit of the structure while being carried out quickly.
 
 You need the following directory setup:
-
+```
 main/
 |
 |--- dimer/
-      |--- input/    # contains all of the frame*.pdb files extracting from the MD run
-      |--- resfiles/ # empty folder right now right now
+      |--- input/    # contains all of the frame*.pdb files extracted from the MD run
+      |--- resfiles/ # empty folder right now
 |--- monomer/
       |--- input/
       |--- resfiles/
+```
 
 ## Create Rosetta resfiles for each sequence position
 We want to repack all residues within a certain distance of each residue being mutated, and we want to do this for the same residues over the entire Rosetta repacking process. Edge residues that move in and out of an arbitrary distance will only be repacked part of the time, so doing this step fixes which residues are being repacked.
@@ -37,6 +69,33 @@ We want to repack all residues within a certain distance of each residue being m
 for this, you need to specify what distance this is, and you need to specify which chain you want to mutate. 
 <pre> python create_resfiles -r $REPACKING_RADIUS --chain $CHAIN_TO_BE_MUTATED </pre>
 
-This script will 
+This script will create a Rosetta resfile for each sequence position, listing all of the residues within $REPACKING_RADIUS Å, telling Rosetta to use the NATAA and only perform sidechain packing, not design.
 
+## Perform Rosetta (R) fixed-backbone sequence design
+From the dimer/monomer directory containing the input and resfiles directories, execute the mdr.py script.
 
+There are some different inputs, but a typical execution resembles the following:
+```
+# export environmental variables pointing the script towards .pdb and .resfile files
+export PDB_DIR="$(pwd)/input"
+export RF_DIR="$(pwd)/resfiles"
+
+python mdr.py --minimize                            # performs gradient-based sidechain minimization\
+--chain A                                           # saturates chain A\
+--soft-rep                                          # uses the softrep score function\
+--block-size 5                                      # determines how many files each array will process\
+--num-files $(ls ${PDB_DIR}/frame*.pdb | wc -l)     # will merge the results from the files only when this number of files is present\
+--n mdrfep_run                                      # name of the output file\
+```
+
+The number of SLURM arrays processing .pdb files in parallel based on the block-size is:
+
+```(Num. arrays) = ((Num. pdb files) // (block-size) + (Num. pdb files % block-size != 0))```
+
+## Perform free energy perturbation (FEP) using the Zwanzig equation
+
+```angular2html
+python grid_search.py --experimental-data ssm_correlation_for_plotting.sc \
+--beta-ub 0.15 \
+--beta-step 0.0001
+```
