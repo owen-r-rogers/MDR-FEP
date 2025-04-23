@@ -29,6 +29,9 @@ protein_of_interest/
 ├── pbc_correction.sh           # performs PBC correction
 ├── extract_frames.sh           # extracts a frame at each ns interval
 
+
+# The .mdp files and the force field files should be stored elsewhere
+
 # energy minimize
 mkdir prep
 sbatch energy_minimization.sh
