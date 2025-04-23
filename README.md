@@ -58,16 +58,16 @@ With this completed you have an ensemble of WT structures that you can feed to R
 ## Before carrying out the Rosetta repacking and scoring you need an idea of what mutations you want to carry out, and what distance you want to repack each residue within. 
 5 Å is a conservative selection, as it repacks a little bit of the structure while being carried out quickly.
 
-You need the following directory setup:
 ```
-main/
-|
-|--- dimer/
-      |--- input/    # contains all of the frame*.pdb files extracted from the MD run
-      |--- resfiles/ # empty folder right now
-|--- monomer/
-      |--- input/
-      |--- resfiles/
+You need the following directory setup:
+
+protein_of_interest/
+├── dimer/
+│   ├── input/       # contains all of the frame*.pdb files extracted from the MD run
+│   └── resfiles/    # empty folder right now
+├── monomer/
+│   ├── input/
+│   └── resfiles/
 ```
 
 ## Create Rosetta resfiles for each sequence position
