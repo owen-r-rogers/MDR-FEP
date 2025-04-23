@@ -4,7 +4,10 @@ MDR-FEP
 This is the repository accompanying my Master of Arts thesis in Chemistry. The focus of my thesis was using molecular dynamics (MD) and the Rosetta software to predict the effects of mutations to computationally designed protein binders (Cao, L., Coventry, B., Goreshnik, I. et al. Design of protein-binding proteins from the target structure alone. Nature 605, 551–560 (2022). https://doi.org/10.1038/s41586-022-04654-9). We used a combination of MD, Rosetta, and free energy perturbation to quantify the binding effects of each mutation. This method, called MDR-FEP (Molecular Dynamics Rosetta Free Energy Perturbation) is first described by Wells et al. (Wells NGM, Smith CA. Predicting binding affinity changes from long-distance mutations using molecular dynamics simulations and Rosetta. Proteins. 2023; 91(7): 920-932. doi:10.1002/prot.26477).
 
 ## The pipeline for MDR-FEP follows the acronym.
-### Step I. Molecular dynamics (MD)
+# Step I. Molecular dynamics (MD)
+
+---
+
 ### This involves:
 ```
   I. Energy minimization  
@@ -48,6 +51,10 @@ for n in 01 02 03; do cd $n; sbatch /path/to/extract_frames.sh; cd ..; done</pre
 
 With this completed you have an ensemble of WT structures that you can feed to Rosetta for fixed-backbone sidechain repacking and scoring.
 
+# Step II. Rosetta sidechain optimization (R)
+
+---
+
 ## Before carrying out the Rosetta repacking and scoring you need an idea of what mutations you want to carry out, and what distance you want to repack each residue within. 
 5 Å is a conservative selection, as it repacks a little bit of the structure while being carried out quickly.
 
@@ -71,7 +78,7 @@ for this, you need to specify what distance this is, and you need to specify whi
 
 This script will create a Rosetta resfile for each sequence position, listing all of the residues within $REPACKING_RADIUS Å, telling Rosetta to use the NATAA and only perform sidechain packing, not design.
 
-## Perform Rosetta (R) fixed-backbone sequence design
+## Perform Rosetta fixed-backbone sequence design
 From the dimer/monomer directory containing the input and resfiles directories, execute the mdr.py script.
 
 There are some different inputs, but a typical execution resembles the following:
@@ -93,7 +100,11 @@ The number of SLURM arrays processing .pdb files in parallel based on the block-
 
 ```(Num. arrays) = ((Num. pdb files) // (block-size) + (Num. pdb files % block-size != 0))```
 
-## Perform free energy perturbation (FEP) using the Zwanzig equation
+# Step III. Free energy perturbation (FEP)
+
+---
+
+## Perform FEP using the Zwanzig equation
 
 ```angular2html
 python grid_search.py --experimental-data ssm_correlation_for_plotting.sc \
