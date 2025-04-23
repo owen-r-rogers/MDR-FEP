@@ -17,7 +17,7 @@ This is the repository accompanying my Master of Arts thesis in Chemistry. The f
 
 With this completed you have an ensemble of WT structures that you can feed to Rosetta for fixed-backbone sidechain repacking and scoring.
 
-## Before carrying out the Rosetta repacking and scoring you need an idea of what mutations you need an idea of what mutations you want to carry out, and what distance you want to repack each residue within. 
+## Before carrying out the Rosetta repacking and scoring you need an idea of what mutations you want to carry out, and what distance you want to repack each residue within. 
 5 Å is a conservative selection, as it repacks a little bit of the structure while being carried out quickly.
 
 You need the following directory setup:
