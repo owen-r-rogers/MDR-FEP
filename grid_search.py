@@ -7,6 +7,7 @@ if __name__ == '__main__':
     parser.add_argument('--experimental-data', type=str, default='ssm_correlation_for_plotting.sc', help='The experimental data from Cao et al. (2022)')
     parser.add_argument('--beta-ub', type=float, default=1, help='The upper bound of the beta parameter')
     parser.add_argument('--beta-step', type=float, default=0.000001, help='The amount to increase the beta parameter by which each step of the grid search')
+    parser.add_argument('--metric', type=str, default='correlation', help='This will search through the complete results of the grid search and find the Beta value that produced the best value of this. This only changes which values are returned in the output file, NOT how the grid search is actually carried out.')
 
     args = parser.parse_args()
 
@@ -85,5 +86,5 @@ if __name__ == '__main__':
     all_data = combine_dfs(all_rosetta_data, all_experimental_data)
 
     # carry out the grid search
-    _ = grid_search(all_data, name, beta_ub=args.beta_ub, beta_step=args.beta_step)
+    _ = grid_search(all_data, name, beta_ub=args.beta_ub, beta_step=args.beta_step, metric_of_interest=args.metric)
 
