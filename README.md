@@ -19,7 +19,14 @@ This is the repository accompanying my Master of arts chemistry thesis. The focu
   This is carried out for BOTH the binder and the binder-target structures independently.
 
 <pre># The only file in your directory should be the .pdb file (of either the monomer or the dimer)
-i.e.:
+
+# The .mdp files and the force field files should be stored elsewhere
+
+# energy minimize
+mkdir prep
+sbatch energy_minimization.sh </pre>
+
+<pre>
 protein_of_interest/
 ├── some.pdb                    # .pdb file of either the monomer or dimer
 ├── prep/                       # The ONLY directory you need to make right now (equilibration will make a dir called equil)
@@ -28,14 +35,9 @@ protein_of_interest/
 ├── production.sh               # performs MD
 ├── pbc_correction.sh           # performs PBC correction
 ├── extract_frames.sh           # extracts a frame at each ns interval
+</pre>
 
-
-# The .mdp files and the force field files should be stored elsewhere
-
-# energy minimize
-mkdir prep
-sbatch energy_minimization.sh
-
+<pre>
 # equilibrate
 sbatch equilibration.sh
 
