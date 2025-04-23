@@ -63,11 +63,16 @@ You need the following directory setup:
 
 protein_of_interest/
 ├── dimer/
-│   ├── input/       # contains all of the frame*.pdb files extracted from the MD run
-│   └── resfiles/    # empty folder right now
+│   ├── create_resfiles.py      # script for creating Rosetta .resfiles
+│   ├── mdr.py                  # script for Rosetta sidechain packing
+│   ├── input/                  # contains all of the frame*.pdb files extracted from the MD run
+│   └── resfiles/               # empty folder right now
 ├── monomer/
+│   ├── create_resfiles.py
+│   ├── mdr.py
 │   ├── input/
 │   └── resfiles/
+
 ```
 
 ## Create Rosetta resfiles for each sequence position
@@ -103,10 +108,39 @@ The number of SLURM arrays processing .pdb files in parallel based on the block-
 # Step III. Free energy perturbation (FEP)
 
 ---
+```
+You need the following directory setup:
+
+base_directory/
+├── get_num_cores_needed.py                             # Helper script
+├── fep.py                                              # module that is imported in grid_search.py
+├── grid_search.py                                      # carries out the grid search
+├── SLURM_FEP.sh                                        # submits grid_search.py as a SLURM array task
+├── results/
+│   ├── all_proteins/
+│   │   ├── softrep__min__5/
+│   │   │   ├── protein1__softrep__min__5__dimer.npz
+│   │   │   ├── protein1__softrep__min__5__monomer.npz
+│   │   │   ├── protein2__softrep__min__5__dimer.npz
+│   │   │   ├── protein2__softrep__min__5__monomer.npz
+│   │   │   ├── ...
+│   │   │   ├── proteinN__softrep__min__5__dimer.npz
+│   │   │   └── proteinN__softrep__min__5__monomer.npz
+│   │   ├── softrep__nomin__5/
+│   │   │   ├── You get the picture
+│   │   ├── hardrep__min__5/
+│   │   └── hardrep__nomin__5/
+
+```
+
+
+
+
 
 ## Perform FEP using the Zwanzig equation
 
 ```angular2html
+# To carry it out without SLURM:
 python grid_search.py --experimental-data ssm_correlation_for_plotting.sc \
 --beta-ub 0.15 \
 --beta-step 0.0001 \
