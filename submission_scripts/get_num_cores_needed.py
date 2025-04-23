@@ -1,6 +1,9 @@
 import os
 import sys
 
+"""
+Helper script - run this and it will return how many SLURM CPUs you need to request.
+"""
 
 protein_dict = {
     'bcov_v3_r3_ems_3hC_436_0002_000000017_0001_0001_47_64_H_.._ems_p1-15H-GBL-16H-GABBL-16H_0382_0001_0001_0001_0001_0001_0001_0001_0001': 'IL-7ra',
