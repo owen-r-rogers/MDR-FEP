@@ -6,7 +6,7 @@ This is the repository accompanying my Master of arts chemistry thesis. The focu
 ---
 Directories listed here:
 <pre> MD                    # Contains SLURM submission scripts for carrying out part I of the pipeline, molecular dynamics (MD)</pre>
-<pre> data                  # Contains input and output data from Rosetta sidechain optimization. natives - .pdb files used; sequences - .seq files containing the sequences in FASTA format; results - results from running Rosetta sidechain packing over the MD ensemble (described below) </pre>
+<pre> data                  # Contains input and output data from MD and Rosetta sidechain optimization. natives - .pdb files used; sequences - .seq files containing the sequences in FASTA format; results - results from running Rosetta sidechain packing over the MD ensemble (described below) </pre>
 <pre> mdp                   # Contains GROMACS .mdp files accompanying SLURM submission scripts in MD directory </pre>
 <pre> submission_scripts    # Contains SLURM submission scripts for parts II and III of the pipeline - Rosetta and FEP, respectively </pre>
 
