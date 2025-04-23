@@ -105,7 +105,8 @@ We want to repack all residues within a certain distance of each residue being m
 
 For this, you need to specify what distance this is, and you need to specify which chain you want to mutate. 
 ```python
-python create_resfiles -r $REPACKING_RADIUS --chain $CHAIN_TO_BE_MUTATED```
+python create_resfiles -r $REPACKING_RADIUS --chain $CHAIN_TO_BE_MUTATED
+```
 
 This script will create a Rosetta resfile for each sequence position, listing all of the residues within $REPACKING_RADIUS Å, telling Rosetta to use the NATAA and only perform sidechain packing, not design.
 
@@ -113,7 +114,7 @@ This script will create a Rosetta resfile for each sequence position, listing al
 From the dimer/monomer directory containing the input and resfiles directories, execute the mdr.py script.
 
 There are some different inputs, but a typical execution without using SLURM resembles the following:
-```
+```shell
 # export environmental variables pointing the script towards .pdb and .resfile files
 export PDB_DIR="$(pwd)/input"
 export RF_DIR="$(pwd)/resfiles"
@@ -161,7 +162,7 @@ base_directory/
 
 ## Perform FEP using the Zwanzig equation
 
-```angular2html
+```shell
 # To carry it out without SLURM:
 python grid_search.py --experimental-data ssm_correlation_for_plotting.sc \
 --beta-ub 0.15 \
@@ -169,7 +170,9 @@ python grid_search.py --experimental-data ssm_correlation_for_plotting.sc \
 --metric correlation
 ```
 Submitting the grid_search.py script to a SLURM array task can be accomplished with SLURM_FEP.sh, or it can be done using the grid_search.ipynb Jupyter notebook. To get an idea of how many CPUs you need here, do:
-<pre>python get_num_cores_needed.py </pre>
+```python
+python get_num_cores_needed.py
+```
 This will search through the directories and identify conditions where you have complete results for all five minibinders.
 
 ## Further analysis
