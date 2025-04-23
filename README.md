@@ -72,7 +72,7 @@ With this completed you have an ensemble of WT structures that you can feed to R
 ---
 
 ## Before carrying out the Rosetta repacking and scoring you need an idea of what mutations you want to carry out, and what distance you want to repack each residue within. 
-5 Å is a conservative selection, as it repacks a little bit of the structure while being carried out quickly.
+5 Å is a conservative selection, as it repacks a little bit of the structure while being carried out quickly. This script does site saturation mutagenesis (SSM) by default, so every possible mutation at each sequence position will be done unless otherwise specified. To change that, you'd have to modify the code so that it doesn't do SSM.
 
 ```
 You need the following directory setup:
@@ -94,7 +94,7 @@ protein_of_interest/
 ## Create Rosetta resfiles for each sequence position
 We want to repack all residues within a certain distance of each residue being mutated, and we want to do this for the same residues over the entire Rosetta repacking process. Edge residues that move in and out of an arbitrary distance will only be repacked part of the time, so doing this step fixes which residues are being repacked.
 
-for this, you need to specify what distance this is, and you need to specify which chain you want to mutate. 
+For this, you need to specify what distance this is, and you need to specify which chain you want to mutate. 
 <pre> python create_resfiles -r $REPACKING_RADIUS --chain $CHAIN_TO_BE_MUTATED </pre>
 
 This script will create a Rosetta resfile for each sequence position, listing all of the residues within $REPACKING_RADIUS Å, telling Rosetta to use the NATAA and only perform sidechain packing, not design.
