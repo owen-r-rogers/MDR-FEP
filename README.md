@@ -101,7 +101,9 @@ python grid_search.py --experimental-data ssm_correlation_for_plotting.sc \
 --beta-step 0.0001 \
 --metric correlation
 ```
-Submitting the grid_search.py script to a SLURM array task can be accomplished with SLURM_FEP.sh, or it can be done using the grid_search.ipynb Jupyter notebook
+Submitting the grid_search.py script to a SLURM array task can be accomplished with SLURM_FEP.sh, or it can be done using the grid_search.ipynb Jupyter notebook. To get an idea of how many CPUs you need here, do:
+<pre>python get_num_cores_needed.py </pre>
+This will search through the directories and identify conditions where you have complete results for all five minibinders.
 
 ## Further analysis
 For each MDR-FEP condition (combination of score function, repacking radius, and minimization) you will be the following files:
