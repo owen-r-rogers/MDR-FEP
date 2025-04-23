@@ -1,4 +1,4 @@
 *.py linguist-language=Python
 *.sh linguist-language=Shell
-*.sc linguist-language=Python
+*.sc linguist-detectable=false
 *.ipynb linguist-language=Jupyter
