@@ -35,7 +35,7 @@ INPUT_PDB=$( ls -tr *.pdb | head )
 BASE_NAME=`basename $INPUT_PDB .pdb`
 MDP_DIR=/path/to/mdp
 
-mkdir prep
+mkdir -p prep
 cp $INPUT_PDB prep
 cd prep
 
