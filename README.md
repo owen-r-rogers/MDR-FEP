@@ -172,7 +172,7 @@ Submitting the grid_search.py script to a SLURM array task can be accomplished w
 This will search through the directories and identify conditions where you have complete results for all five minibinders.
 
 ## Further analysis
-For each MDR-FEP condition (combination of score function, repacking radius, and minimization) you will be the following files:
+For each MDR-FEP condition (combination of score function, repacking radius, and minimization) the script will output the following files:
 ```angular2html
 all_data_$CONDITION.csv         # contains all of the raw data before any processing
 correlations_$CONDITION.sc      # contains correlation and accuracy values for all values of Beta tested
