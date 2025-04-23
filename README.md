@@ -39,7 +39,6 @@ The directory should now resemble this:
 <pre>
 protein_of_interest/
 ├── some.pdb                    # .pdb file of either the monomer or dimer
-├── prep/                       # The ONLY directory you need to make right now (equilibration will make a dir called equil)
 ├── energy_minimization.sh      # performs energy minimization
 ├── equilibration.sh            # performs equilibration
 ├── production.sh               # performs MD
