@@ -32,14 +32,12 @@ Directories listed here:
 # The .mdp files and the force field files should be stored elsewhere
 
 # energy minimize
-mkdir prep
 sbatch energy_minimization.sh </pre>
 
 The directory should now resemble this:
 <pre>
-protein_of_interest/
+base_dir/
 ├── some.pdb                    # .pdb file of either the monomer or dimer
-├── prep/                       # The ONLY directory you need to make right now (equilibration will make a dir called equil)
 ├── energy_minimization.sh      # performs energy minimization
 ├── equilibration.sh            # performs equilibration
 ├── production.sh               # performs MD
@@ -57,13 +55,13 @@ mkdir mdrun
 cd mdrun
 mkdir 01 02 03
 for n in 01 02 03; do cd $n; gmx grompp -f /path/to/mdp/production_1000ns.mdp \
--c /path/to/equil/npt4.pdb \
--r /path/to/prep/ions.pdb \
--p /path/to/prep/topol.top \
--t /path/to/equil/npt4.cpt \
+-c ../../equil/npt4.pdb \
+-r ../../prep/ions.pdb \
+-p ../../prep/topol.top \
+-t ../../equil/npt4.cpt \
 -o topol.tpr \
 -po mdout.mdp \
--queit; cd ..; done
+-quiet; cd ..; done
 
 # carry out MD run
 for n in 01 02 03; do cd $n; sbatch /path/to/production.sh; cd ..; done
@@ -104,15 +102,29 @@ protein_of_interest/
 We want to repack all residues within a certain distance of each residue being mutated, and we want to do this for the same residues over the entire Rosetta repacking process. Edge residues that move in and out of an arbitrary distance will only be repacked part of the time, so doing this step fixes which residues are being repacked.
 
 For this, you need to specify what distance this is, and you need to specify which chain you want to mutate. 
-<pre> python create_resfiles -r $REPACKING_RADIUS --chain $CHAIN_TO_BE_MUTATED </pre>
+```python
+python create_resfiles -r $REPACKING_RADIUS --chain $CHAIN_TO_BE_MUTATED
+```
 
 This script will create a Rosetta resfile for each sequence position, listing all of the residues within $REPACKING_RADIUS Å, telling Rosetta to use the NATAA and only perform sidechain packing, not design.
+
+## Renumber chain B residues
+Rosetta and GROMACS number their residues differently, so run renumber-chainB.py from the input directory first
+
+Then, run this command to rename the new files:
+
+```shell
+for file in frame*_renum.pdb; do
+  newname="${file/_renum.pdb/.pdb}"
+  mv -- "$file" "$newname"
+done
+```
 
 ## Perform Rosetta fixed-backbone sequence design
 From the dimer/monomer directory containing the input and resfiles directories, execute the mdr.py script.
 
 There are some different inputs, but a typical execution without using SLURM resembles the following:
-```
+```shell
 # export environmental variables pointing the script towards .pdb and .resfile files
 export PDB_DIR="$(pwd)/input"
 export RF_DIR="$(pwd)/resfiles"
@@ -160,7 +172,7 @@ base_directory/
 
 ## Perform FEP using the Zwanzig equation
 
-```angular2html
+```shell
 # To carry it out without SLURM:
 python grid_search.py --experimental-data ssm_correlation_for_plotting.sc \
 --beta-ub 0.15 \
@@ -168,7 +180,9 @@ python grid_search.py --experimental-data ssm_correlation_for_plotting.sc \
 --metric correlation
 ```
 Submitting the grid_search.py script to a SLURM array task can be accomplished with SLURM_FEP.sh, or it can be done using the grid_search.ipynb Jupyter notebook. To get an idea of how many CPUs you need here, do:
-<pre>python get_num_cores_needed.py </pre>
+```python
+python get_num_cores_needed.py
+```
 This will search through the directories and identify conditions where you have complete results for all five minibinders.
 
 ## Further analysis

@@ -4,7 +4,7 @@
 #SBATCH --ntasks=1
 #SBATCH --mem-per-gpu=7168
 #SBATCH --gres=gpu:1
-#SBATCH --job-name=production_250ns
+#SBATCH --job-name=production_1000ns
 #SBATCH --mail-type=END
 #SBATCH --mail-user=your@email.com
 
