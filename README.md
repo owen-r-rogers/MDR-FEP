@@ -5,11 +5,11 @@ This is the repository accompanying my Master of arts chemistry thesis. The focu
 
 ---
 Important directories and files listed here:
-`MD`                                  # Contains SLURM submission scripts for carrying out part I of the pipeline, molecular dynamics (MD)
-`data`                                # Contains input and output data from MD and Rosetta sidechain optimization. natives - .pdb files used; sequences - .seq files containing the sequences in FASTA format; results - results from running Rosetta sidechain packing over the MD ensemble (described below)
-`mdp`                                 # Contains GROMACS .mdp files accompanying SLURM submission scripts in MD directory
-`submission_scripts`                  # Contains SLURM submission scripts for parts II and III of the pipeline - Rosetta and FEP, respectively
-`ssm_correlation_for_plotting.sc`     # experimental data for the binders from Cao, L., Coventry, B., Goreshnik, I. et al. Design of protein-binding proteins from the target structure alone. Nature 605, 551–560 (2022). https://doi.org/10.1038/s41586-022-04654-9
+`MD`                                  # Contains SLURM submission scripts for carrying out part I of the pipeline, molecular dynamics (MD)  
+`data`                                # Contains input and output data from MD and Rosetta sidechain optimization. natives - .pdb files used; sequences - .seq files containing the sequences in FASTA format; results - results from running Rosetta sidechain packing over the MD ensemble (described below)  
+`mdp`                                 # Contains GROMACS .mdp files accompanying SLURM submission scripts in MD directory  
+`submission_scripts`                  # Contains SLURM submission scripts for parts II and III of the pipeline - Rosetta and FEP, respectively  
+`ssm_correlation_for_plotting.sc`     # experimental data for the binders from Cao, L., Coventry, B., Goreshnik, I. et al. Design of protein-binding proteins from the target structure alone. Nature 605, 551–560 (2022). https://doi.org/10.1038/s41586-022-04654-9  
 
 
 ## The order of the pipeline for MDR-FEP follows the acronym.
