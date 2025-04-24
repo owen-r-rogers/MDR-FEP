@@ -149,6 +149,26 @@ The number of SLURM arrays processing .pdb files in parallel based on the block-
 
 ```(Num. arrays) = ((Num. pdb files) // (block-size) + (Num. pdb files % block-size != 0))```
 
+---
+
+### A note on naming
+For my thesis, I used two score functions: hardrep (ref2015), and softrep. I also experimented with an extra step for gradient-based sidechain minimization AFTER fixed-backbone repacking. This creates four different "conditions" that the monomer and dimer .pdb files for each protein were repacked using:
+```
+softrep without minimization
+softrep with minimization
+hardrep without minimization
+hardrep with minimization
+```
+Since I only repacked within a 5 Å radius around each sequence position, I also added a specifier for that in the directories I used to store the results, which are as follows:
+```
+softrep__min__5
+softrep__nomin__5
+hardrep__min__5
+hardrep__nomin__5
+```
+
+---
+
 # Step III. Free energy perturbation (FEP)
 
 ---
