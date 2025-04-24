@@ -37,6 +37,7 @@ sbatch energy_minimization.sh </pre>
 The directory should now resemble this:
 <pre>
 base_dir/
+├── prep/                       # this directory is created by the energy_minimization.sh script
 ├── some.pdb                    # .pdb file of either the monomer or dimer
 ├── energy_minimization.sh      # performs energy minimization
 ├── equilibration.sh            # performs equilibration
