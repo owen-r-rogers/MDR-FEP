@@ -109,7 +109,7 @@ python create_resfiles -r $REPACKING_RADIUS --chain $CHAIN_TO_BE_MUTATED
 This script will create a Rosetta resfile for each sequence position, listing all of the residues within $REPACKING_RADIUS Å, telling Rosetta to use the NATAA and only perform sidechain packing, not design.
 
 ## Assign 'A' to monomer .pdb files
-From the "input" directory, run
+From the "input" directory, run (specifying which chain you're interested in mutating)
 ```shell
 python assign_chain_name.py --chain A
 ```
