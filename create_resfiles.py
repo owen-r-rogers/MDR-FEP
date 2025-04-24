@@ -228,7 +228,7 @@ if __name__ == '__main__':
     packing_sphere = args.repack_within
 
     # define the reference pose
-    ref_pdb = path.join(pdb_house, "1QYS.pdb")
+    ref_pdb = path.join(pdb_house, "frame0.pdb")
     ref_string = parse_pdb_for_resfile(ref_pdb)
     ref_pose = string_to_pose_for_resfile(ref_string)
 
