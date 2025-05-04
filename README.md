@@ -1,7 +1,7 @@
 MDR-FEP
 ----
 
-This is the repository accompanying my Master of arts chemistry thesis. The focus of my thesis was using molecular dynamics (MD) and the Rosetta software to predict the effects of mutations to computationally designed protein binders (Cao, L., Coventry, B., Goreshnik, I. et al. Design of protein-binding proteins from the target structure alone. Nature 605, 551–560 (2022). https://doi.org/10.1038/s41586-022-04654-9). We used a combination of MD, Rosetta, and free energy perturbation to quantify the binding effects of each mutation. This method, called MDR-FEP (Molecular Dynamics Rosetta Free Energy Perturbation) is first described by Wells et al. (Wells NGM, Smith CA. Predicting binding affinity changes from long-distance mutations using molecular dynamics simulations and Rosetta. Proteins. 2023; 91(7): 920-932. doi:10.1002/prot.26477).
+This is the repository accompanying my master of arts in chemistry thesis. The focus of my thesis was using molecular dynamics (MD) and the Rosetta software to predict the effects of mutations to computationally designed protein binders (Cao, L., Coventry, B., Goreshnik, I. et al. Design of protein-binding proteins from the target structure alone. Nature 605, 551–560 (2022). https://doi.org/10.1038/s41586-022-04654-9). We used a combination of MD, Rosetta, and free energy perturbation to quantify the binding effects of each mutation. This method, called MDR-FEP (Molecular Dynamics Rosetta Free Energy Perturbation) is first described by Wells et al. (Wells NGM, Smith CA. Predicting binding affinity changes from long-distance mutations using molecular dynamics simulations and Rosetta. Proteins. 2023; 91(7): 920-932. doi:10.1002/prot.26477).
 
 ---
 ## Important directories and files contained here:  
