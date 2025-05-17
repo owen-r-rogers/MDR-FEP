@@ -17,8 +17,10 @@ from pyrosetta.rosetta.core.pack.task import operation
 
 """
 MDR
-Parallelized
-for in silico deep mutagenesis
+For in silico deep mutagenesis.
+
+This script was adapted from the work of Chukwudi Udechukwu (Wesleyan University '27), and Ishraq Wasif (Wesleyan University '24).
+
 """
 
 
